@@ -1,0 +1,25 @@
+name: CI API
+
+on:
+  push:
+    paths:
+      - "apps/api/**"
+  pull_request:
+    paths:
+      - "apps/api/**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache-dependency-path: apps/api/go.sum
+      - run: go build ./...
+      - run: go test ./...
+      - run: go vet ./...
