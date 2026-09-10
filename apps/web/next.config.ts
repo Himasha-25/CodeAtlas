@@ -1,5 +1,10 @@
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   output: "standalone",
-} as const;
+  eslint: {
+    dirs: ["src"],
+  },
+};
 
 export default nextConfig;
