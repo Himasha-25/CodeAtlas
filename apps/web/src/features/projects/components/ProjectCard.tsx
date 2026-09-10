@@ -22,7 +22,7 @@ export function ProjectCard({ project, onDelete }: Props) {
         )}
       </CardHeader>
       <CardFooter className="gap-2">
-        <Button variant="outline" size="sm" asChild>
+        <Button variant="outline" size="sm">
           <Link href={`/projects/${project.id}`}>Open</Link>
         </Button>
         <Button variant="destructive" size="sm" onClick={() => onDelete(project.id)}>
