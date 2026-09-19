@@ -7,7 +7,7 @@ AI-Powered Codebase Intelligence & Developer Onboarding Platform.
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, TanStack Query
 - **Backend:** Go, Gin, GORM
 - **Database:** PostgreSQL
-- **AI:** Ollama (local LLM), RAG over code symbols/files
+- **AI:** Groq (cloud LLM API), RAG over code symbols/files
 - **Analyzer:** Tree-sitter AST parsing (Go package, no separate service)
 
 ## Quick Start
