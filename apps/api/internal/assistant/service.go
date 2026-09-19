@@ -12,11 +12,11 @@ type Service struct {
 	llm       LLMClient
 }
 
-func NewService(db *gorm.DB, ollamaURL, ollamaModel string) *Service {
+func NewService(db *gorm.DB, groqAPIKey string) *Service {
 	return &Service{
 		store:     newStore(db),
 		retriever: newRetriever(db),
-		llm:       newOllamaClient(ollamaURL, ollamaModel),
+		llm:       NewGroqClient(groqAPIKey),
 	}
 }
 
