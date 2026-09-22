@@ -5,7 +5,6 @@
 - Go 1.23+
 - Node.js 20+
 - Docker & Docker Compose
-- Ollama (optional for AI features)
 
 ## Start
 
@@ -13,7 +12,7 @@
 # 1. Clone and configure
 cp .env.example .env
 
-# 2. Start Postgres (and Ollama if needed)
+# 2. Start Postgres
 docker-compose -f infra/docker/docker-compose.dev.yml up -d
 
 # 3. Run migrations
@@ -23,7 +22,7 @@ cd apps/api && go run cmd/server/main.go migrate
 cd apps/api && go run cmd/server/main.go
 
 # 5. Start frontend
-cd apps/web && npm install && npm run dev
+cd apps/web && yarn install && yarn dev
 ```
 
 ## Build Order
