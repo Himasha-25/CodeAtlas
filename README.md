@@ -14,7 +14,7 @@ AI-Powered Codebase Intelligence & Developer Onboarding Platform.
 
 ```bash
 cp .env.example .env
-docker-compose -f infra/docker/docker-compose.yml up
+docker compose -f infra/docker/docker-compose.dev.yml up -d
 ```
 
 ## Development
