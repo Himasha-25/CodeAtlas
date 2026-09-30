@@ -1,28 +1,52 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	DatabaseURL string
-	JWTSecret   string
-	Port        string
-	Env         string
-	GroqAPIKey  string
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
+	JWTSecret  string
+	GroqAPIKey string
+	Port       string
+	Env        string
 }
 
-func Load() *Config {
+func (c *Config) DatabaseURL() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName)
+}
+
+func Load() (*Config, error) {
 	_ = godotenv.Load()
-	return &Config{
-		DatabaseURL: getEnv("DATABASE_URL", "postgres://codeatlas:codeatlas@localhost:5432/codeatlas?sslmode=disable"),
-		JWTSecret:   getEnv("JWT_SECRET", "dev-secret"),
-		Port:        getEnv("PORT", "8080"),
-		Env:         getEnv("ENV", "development"),
-		GroqAPIKey:  os.Getenv("GROQ_API_KEY"), // intentionally no default; callers must check
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		return nil, fmt.Errorf("JWT_SECRET is required")
 	}
+	groqAPIKey := os.Getenv("GROQ_API_KEY")
+	if groqAPIKey == "" {
+		return nil, fmt.Errorf("GROQ_API_KEY is required")
+	}
+
+	return &Config{
+		DBHost:     getEnv("DB_HOST", "localhost"),
+		DBPort:     getEnv("DB_PORT", "5432"),
+		DBUser:     getEnv("DB_USER", "codeatlas"),
+		DBPassword: getEnv("DB_PASSWORD", "codeatlas"),
+		DBName:     getEnv("DB_NAME", "codeatlas"),
+		JWTSecret:  jwtSecret,
+		GroqAPIKey: groqAPIKey,
+		Port:       getEnv("PORT", "8080"),
+		Env:        getEnv("ENV", "development"),
+	}, nil
 }
 
 func getEnv(key, fallback string) string {

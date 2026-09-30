@@ -9,9 +9,12 @@ import (
 )
 
 func main() {
-	cfg := config.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	database := db.Connect(cfg.DatabaseURL)
+	database := db.Connect(cfg.DatabaseURL())
 	db.Migrate(database)
 
 	router := httpserver.NewRouter(database, cfg)
