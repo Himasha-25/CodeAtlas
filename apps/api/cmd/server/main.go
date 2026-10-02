@@ -15,7 +15,6 @@ func main() {
 	}
 
 	database := db.Connect(cfg.DatabaseURL())
-	db.Migrate(database)
 
 	router := httpserver.NewRouter(database, cfg)
 	if err := router.Run(":" + cfg.Port); err != nil {
