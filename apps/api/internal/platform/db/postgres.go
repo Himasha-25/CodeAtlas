@@ -15,6 +15,4 @@ func Connect(dsn string) *gorm.DB {
 	return db
 }
 
-func Migrate(db *gorm.DB) {
-	// Auto-migrate GORM models here as they are added.
-}
+
