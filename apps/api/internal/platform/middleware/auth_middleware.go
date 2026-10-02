@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/codeatlas/api/internal/auth"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func Auth(secret string) gin.HandlerFunc {
@@ -15,16 +15,12 @@ func Auth(secret string) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
 			return
 		}
-		tokenStr := strings.TrimPrefix(header, "Bearer ")
-		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-			return []byte(secret), nil
-		})
-		if err != nil || !token.Valid {
+		userID, err := auth.VerifyToken(strings.TrimPrefix(header, "Bearer "), secret)
+		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			return
 		}
-		claims, _ := token.Claims.(jwt.MapClaims)
-		c.Set("userID", claims["sub"])
+		c.Set("userID", userID)
 		c.Next()
 	}
 }
