@@ -13,7 +13,7 @@ func NewHandler(svc *Service) *Handler { return &Handler{svc} }
 
 func userID(c *gin.Context) uint {
 	id, _ := c.Get("userID")
-	return uint(id.(float64))
+	return id.(uint)
 }
 
 func (h *Handler) Create(c *gin.Context) {
