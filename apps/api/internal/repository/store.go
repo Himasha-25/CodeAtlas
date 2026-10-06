@@ -17,3 +17,7 @@ func (s *store) findOne(id uint) (*Repository, error) {
 	var r Repository
 	return &r, s.db.First(&r, id).Error
 }
+
+func (s *store) delete(id uint) error {
+	return s.db.Delete(&Repository{}, id).Error
+}

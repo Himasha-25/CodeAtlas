@@ -30,6 +30,10 @@ func (s *Service) List(projectID uint) ([]Repository, error) {
 	return s.store.findByProject(projectID)
 }
 
+func (s *Service) Get(id uint) (*Repository, error) {
+	return s.store.findOne(id)
+}
+
 func saveMultipart(src multipart.File, dest string) error {
 	out, err := os.Create(dest)
 	if err != nil {

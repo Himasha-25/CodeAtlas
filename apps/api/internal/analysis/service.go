@@ -17,20 +17,22 @@ func NewService(db *gorm.DB, repoSvc *repository.Service) *Service {
 }
 
 func (s *Service) Start(repositoryID uint) (*AnalysisRun, error) {
-	repos, err := s.repoSvc.List(0) // caller should pass projectID; simplified here
-	_ = repos
+	repo, err := s.repoSvc.Get(repositoryID)
 	if err != nil {
-		return nil, fmt.Errorf("load repository: %w", err)
+		return nil, fmt.Errorf("repository not found: %w", err)
 	}
 	run := &AnalysisRun{RepositoryID: repositoryID, Status: "pending"}
 	if err := s.store.create(run); err != nil {
 		return nil, err
 	}
-	// TODO: look up repo.StorePath from repository store
-	s.runJob(run, "")
+	s.runJob(run, repo.StorePath)
 	return run, nil
 }
 
 func (s *Service) Status(repositoryID uint) (*AnalysisRun, error) {
 	return s.store.findLatest(repositoryID)
+}
+
+func (s *Service) History(repositoryID uint) ([]AnalysisRun, error) {
+	return s.store.listByRepository(repositoryID)
 }

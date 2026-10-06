@@ -31,8 +31,19 @@ func (h *Handler) Status(c *gin.Context) {
 	c.JSON(http.StatusOK, run)
 }
 
+func (h *Handler) History(c *gin.Context) {
+	repoID, _ := strconv.Atoi(c.Param("repositoryId"))
+	runs, err := h.svc.History(uint(repoID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, runs)
+}
+
 func RegisterRoutes(rg *gin.RouterGroup, svc *Service) {
 	h := NewHandler(svc)
 	rg.POST("/repositories/:repositoryId/analysis", h.Start)
 	rg.GET("/repositories/:repositoryId/analysis", h.Status)
+	rg.GET("/repositories/:repositoryId/analysis/runs", h.History)
 }
