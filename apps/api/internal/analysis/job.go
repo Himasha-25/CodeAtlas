@@ -2,15 +2,13 @@ package analysis
 
 import (
 	"log"
-	"time"
 
 	"github.com/codeatlas/api/analyzer"
 )
 
 func (s *Service) runJob(run *AnalysisRun, repoPath string) {
 	go func() {
-		now := time.Now()
-		s.store.db.Model(run).Updates(map[string]interface{}{"status": "running", "started_at": &now})
+		s.store.updateStatus(run.ID, "running", "")
 
 		result, err := analyzer.Analyze(repoPath)
 		if err != nil {
@@ -24,8 +22,7 @@ func (s *Service) runJob(run *AnalysisRun, repoPath string) {
 			return
 		}
 
-		done := time.Now()
-		s.store.db.Model(run).Updates(map[string]interface{}{"status": "completed", "completed_at": &done})
+		s.store.updateStatus(run.ID, "completed", "")
 	}()
 }
 
