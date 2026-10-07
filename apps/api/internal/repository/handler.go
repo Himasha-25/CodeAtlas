@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -19,9 +20,17 @@ func (h *Handler) Upload(c *gin.Context) {
 		return
 	}
 	defer file.Close()
+
 	repo, err := h.svc.Upload(uint(projectID), header.Filename, file, header)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		switch {
+		case errors.Is(err, ErrFileTooLarge):
+			c.JSON(http.StatusRequestEntityTooLarge, gin.H{"error": err.Error()})
+		case errors.Is(err, ErrInvalidMIME):
+			c.JSON(http.StatusUnsupportedMediaType, gin.H{"error": err.Error()})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusCreated, repo)
