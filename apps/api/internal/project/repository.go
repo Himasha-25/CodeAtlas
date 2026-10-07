@@ -20,6 +20,11 @@ func (r *repository) findOne(id, userID uint) (*Project, error) {
 
 func (r *repository) update(p *Project) error { return r.db.Save(p).Error }
 
+func (r *repository) setActiveRepo(projectID, userID uint, repoID *uint) error {
+	return r.db.Model(&Project{}).Where("id = ? AND user_id = ?", projectID, userID).
+		Update("active_repository_id", repoID).Error
+}
+
 func (r *repository) delete(id, userID uint) error {
 	return r.db.Where("id = ? AND user_id = ?", id, userID).Delete(&Project{}).Error
 }

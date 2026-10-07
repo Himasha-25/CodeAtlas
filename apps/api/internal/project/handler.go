@@ -73,6 +73,22 @@ func (h *Handler) Delete(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func (h *Handler) SetActiveRepository(c *gin.Context) {
+	projectID, _ := strconv.Atoi(c.Param("id"))
+	var body struct {
+		RepositoryID *uint `json:"repositoryId"`
+	}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.svc.SetActiveRepository(uint(projectID), userID(c), body.RepositoryID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusNoContent)
+}
+
 func RegisterRoutes(rg *gin.RouterGroup, svc *Service) {
 	h := NewHandler(svc)
 	rg.POST("/projects", h.Create)
@@ -80,4 +96,5 @@ func RegisterRoutes(rg *gin.RouterGroup, svc *Service) {
 	rg.GET("/projects/:id", h.Get)
 	rg.PATCH("/projects/:id", h.Update)
 	rg.DELETE("/projects/:id", h.Delete)
+	rg.PUT("/projects/:id/active-repository", h.SetActiveRepository)
 }
