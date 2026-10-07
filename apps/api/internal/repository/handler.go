@@ -12,6 +12,24 @@ type Handler struct{ svc *Service }
 
 func NewHandler(svc *Service) *Handler { return &Handler{svc} }
 
+func (h *Handler) Create(c *gin.Context) {
+	projectID, _ := strconv.Atoi(c.Param("projectId"))
+	var body struct {
+		Name      string `json:"name" binding:"required"`
+		StorePath string `json:"storePath" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	repo, err := h.svc.Create(uint(projectID), body.Name, body.StorePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, repo)
+}
+
 func (h *Handler) Upload(c *gin.Context) {
 	projectID, _ := strconv.Atoi(c.Param("projectId"))
 	file, header, err := c.Request.FormFile("file")
@@ -48,6 +66,7 @@ func (h *Handler) List(c *gin.Context) {
 
 func RegisterRoutes(rg *gin.RouterGroup, svc *Service) {
 	h := NewHandler(svc)
-	rg.POST("/projects/:projectId/repositories", h.Upload)
+	rg.POST("/projects/:projectId/repositories", h.Create)
+	rg.POST("/projects/:projectId/repositories/upload", h.Upload)
 	rg.GET("/projects/:projectId/repositories", h.List)
 }

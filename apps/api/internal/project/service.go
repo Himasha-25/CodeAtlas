@@ -30,3 +30,8 @@ func (s *Service) Update(id, userID uint, req UpdateRequest) (*Project, error) {
 }
 
 func (s *Service) Delete(id, userID uint) error { return s.repo.delete(id, userID) }
+
+// SetActiveRepository sets or clears (repoID == nil) the active repository for a project.
+func (s *Service) SetActiveRepository(projectID, userID uint, repoID *uint) error {
+	return s.repo.setActiveRepo(projectID, userID, repoID)
+}

@@ -14,6 +14,12 @@ type Service struct{ store *store }
 
 func NewService(db *gorm.DB) *Service { return &Service{store: newStore(db)} }
 
+// Create registers a repository record that already exists on disk at storePath.
+func (s *Service) Create(projectID uint, name, storePath string) (*Repository, error) {
+	repo := &Repository{ProjectID: projectID, Name: name, StorePath: storePath}
+	return repo, s.store.create(repo)
+}
+
 func (s *Service) Upload(projectID uint, name string, file multipart.File, header *multipart.FileHeader) (*Repository, error) {
 	if header.Size > MaxUploadBytes {
 		return nil, ErrFileTooLarge
